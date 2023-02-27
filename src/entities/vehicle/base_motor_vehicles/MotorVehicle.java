@@ -12,9 +12,9 @@ import java.util.Scanner;
 
 public abstract class MotorVehicle extends Vehicle {
 
-    private DrivingLicence requiredLicense;
-    private String licensePlate;
-    private PowerSource powerSource;
+    private final DrivingLicence requiredLicense;
+    private final String licensePlate;
+    private final PowerSource powerSource;
     private double drivingRangeInKm; //--> espressa in km che può ancora percorrere
     private final double MIN_DRIVING_RANGE_IN_KM = 50; //limite autonomia per cui è necessario il rifornimento
     private boolean insufficientDrivingRange;

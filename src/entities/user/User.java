@@ -17,25 +17,37 @@ public class User {
     //Casco \
     //Patenti \
     //credito
-    private UUID userID;
-    private String name;
-    private String username;
-    private String fiscalCode;
+    private final UUID userID;
+    private final String name;
+    private final String username;
+    private final String fiscalCode;
     private Position userPosition;
-    private LocalDate dateOfBirth;
+    private final LocalDate dateOfBirth;
     private boolean hasHelmet;
     private double userCredit;
-    private HashSet<DrivingLicence> drivingLicencehashSet;
 
-    public User(String name, String username, String fiscalCode, LocalDate dateOfBirth,boolean hasHelmet) {
-        this.name = name;
-        this.username = username;
-        this.fiscalCode = fiscalCode;
-        this.dateOfBirth = dateOfBirth;
-        this.hasHelmet = hasHelmet;
+
+    public User(UserBuilder userBuilder) {
+        this.userID = UUID.randomUUID();
+        this.name = userBuilder.getName();
+        this.username = userBuilder.getUsername();
+        this.fiscalCode = userBuilder.getFiscalCode();
+        this.dateOfBirth = userBuilder.getDateOfBirth();
+        this.hasHelmet = false;
         this.userCredit = 0;
-        this.drivingLicencehashSet = new HashSet<>();
     }
+
+    //cosa può fare un utente:
+
+    /*
+    - noleggiare una vettura
+    - ottenere le vetture libere all'interno di un rage dato rispetto alla posizione dell'utente
+    - terminare il noleggio
+    - ottenere tutte le proprie corse e relativo storico di transizioni
+    - poter settare la voce ho il casco non ho il casco
+    - attivare la localizzazione e inserire la propria posizione
+    - visualizzare le tariffe d tutti i mezzi che mette a disposizione l'azienda
+     */
 
     public UUID getUserID() {
         return userID;
@@ -65,7 +77,16 @@ public class User {
         return userCredit;
     }
 
-    public HashSet<DrivingLicence> getDrivingLicencehashSet() {
-        return drivingLicencehashSet;
+    public HashSet<DrivingLicence> getDrivingLicenceHashSet() {
+        return ;
     }
+
+
+    //aggiunge una patente alla lista delle patenti dell'utente;
+    public void addNewDrivingLicence(DrivingLicence drivingLicence) {
+        this.drivingLicencehashSet.add(drivingLicence);
+    }
+
+    //rimuove una patente dalla lista delle patenti dell'utente
+
 }

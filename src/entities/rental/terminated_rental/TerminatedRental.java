@@ -1,16 +1,14 @@
 package entities.rental.terminated_rental;
 
 import Database.Database;
-import admin.Admin;
+import admin.AdminSingleton;
 import entities.position.Position;
 import entities.rental.RentalInProgress;
 import entities.vehicle.base_vehicles.Vehicle;
 
-import javax.xml.stream.Location;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class TerminatedRental extends RentalInProgress {
@@ -25,7 +23,7 @@ public class TerminatedRental extends RentalInProgress {
         super(Database.removeRentalInProgressByRentalID(rentalID));
         Vehicle vehicle = Database.getUuidVehiclehashMap().get(this.vehicleID);
         this.rentalEndTime = rentalEndTime;
-        Admin.updateStatusVehicle(vehicleID); //aggiorno lo stato dle veicolo posizione + autonomia se presnete
+        AdminSingleton.updateStatusVehicle(vehicleID); //aggiorno lo stato dle veicolo posizione + autonomia se presnete
         this.rentalEndPosition = vehicle.getGeographicPosition();
         calculateTotPrice(vehicle.getPricePerMinute());
         vehicle.setAvailable(true);
