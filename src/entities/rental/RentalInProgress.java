@@ -11,16 +11,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 
-//secondo c'è bidogno di una classe noleggio e poi di due funzioni di sistama inizio corsa che inizializa
-// un istanza di noleggio e la mette nel database
-//poi un altra funzione fine corsa che sato id del noleggio termine il noleggio e aggiorna i valori sul prezzo e i km percorsi.
 public class RentalInProgress {
 
-    //registra inizio noleggio con un TimeStamp;
-    //registra fine con TimeStamp;
-    //inserisco km percorsi
-    //aggiorno autonomia auto
-    //calcola prezzo veicolo
     protected UUID rentalID;
     protected UUID userID;
     protected UUID vehicleID;
