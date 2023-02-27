@@ -19,8 +19,8 @@ public abstract class MotorVehicle extends Vehicle {
     private final double MIN_DRIVING_RANGE_IN_KM = 50; //limite autonomia per cui è necessario il rifornimento
     private boolean insufficientDrivingRange;
 
-    public MotorVehicle(String licensePlate, DrivingLicence requiredLicense, PowerSource powerSource, double drivingRangeInKm, Position geographicLocation,BigDecimal pricePerMinute, boolean isHelmetNecessary) {
-        super(geographicLocation, isHelmetNecessary, pricePerMinute);
+    public MotorVehicle(String licensePlate, DrivingLicence requiredLicense, PowerSource powerSource, double drivingRangeInKm, Position geographicPosition,BigDecimal pricePerMinute, boolean isHelmetNecessary) {
+        super(geographicPosition, isHelmetNecessary, pricePerMinute);
         this.requiredLicense = requiredLicense;
         this.licensePlate = licensePlate;
         this.powerSource = powerSource;

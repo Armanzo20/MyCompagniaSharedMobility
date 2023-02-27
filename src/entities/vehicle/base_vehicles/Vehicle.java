@@ -14,9 +14,9 @@ public abstract class Vehicle {
     private final BigDecimal pricePerMinute;
     private boolean isAvailable;
 
-    protected Vehicle(Position geographicLocation, boolean isHelmetNecessary, BigDecimal pricePerMinute) {
+    protected Vehicle(Position geographicPosition, boolean isHelmetNecessary, BigDecimal pricePerMinute) {
         this.vehicleID = UUID.randomUUID();
-        this.geographicPosition = geographicLocation;
+        this.geographicPosition = geographicPosition;
         this.isHelmetNecessary = isHelmetNecessary;
         this.pricePerMinute = pricePerMinute;
         this.isAvailable = false;
