@@ -1,6 +1,7 @@
 package entities.rental.terminated_rental;
 
 import Database.Database;
+import MyException.InsufficientRentalMinutesException;
 import MyException.VehicleInsufficientDrivingRangeException;
 import MyException.VehicleNotAvailableException;
 import admin.AdminSingleton;
@@ -17,7 +18,7 @@ public class TerminatedRental extends RentalInProgress {
     private LocalDateTime rentalEndTime;
     private Position rentalEndPosition;
     private BigDecimal totPrice;
-    private final Duration MIN_DURATION_IN_MINUTES = Duration.ofMinutes(5);
+    private static final Duration MIN_DURATION_IN_MINUTES = Duration.ofMinutes(5);
 
     //crea un oggetto TerminateRental a partire da ID di RentalInProgress
     //rimuove dal database il noleggio che era in corso,
@@ -63,9 +64,13 @@ public class TerminatedRental extends RentalInProgress {
         this.totPrice = pricePerMinute.multiply(BigDecimal.valueOf(getRentalDuration().toMinutes()));
     }
 
+
+    //verifica se i minuti del noleggio sono maggiori o uguali del limite pre impostato
     private void checkMinDuration(){
         if (getRentalDuration().toMinutes() >= MIN_DURATION_IN_MINUTES.toMinutes()) {
-            throw new MyException.UserCrediInsufficient("the credit is insufficient");
+            throw new InsufficientRentalMinutesException("Impossible to terminate rental" +
+                    " because it has not reached the minimum rental time of " + MIN_DURATION_IN_MINUTES +
+                    " minutes. You have " + (getRentalDuration().toMinutes()-MIN_DURATION_IN_MINUTES.toMinutes())  + " minutes left");
         }
     }
 }

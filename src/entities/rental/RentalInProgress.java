@@ -4,6 +4,7 @@ import Database.Database;
 import MyException.VehicleInsufficientDrivingRangeException;
 import MyException.VehicleNotAvailableException;
 import entities.position.Position;
+import entities.user.User;
 import entities.vehicle.base_motor_vehicles.MotorVehicle;
 import entities.vehicle.base_vehicles.Vehicle;
 
@@ -22,15 +23,11 @@ public class RentalInProgress {
 
     public RentalInProgress(UUID userID, UUID vehicleID, UUID rentalID) {
         Vehicle vehicle = Database.getDatabase().getVehicleByID(vehicleID);
-        if (u)
-        if (vehicle instanceof MotorVehicle) {
-            if (((MotorVehicle) vehicle).isInsufficientDrivingRange()) {
-                throw new VehicleInsufficientDrivingRangeException("The vehicle with the ID number " + vehicleID + " does not have enough driving range for rental");
-            }
-        }
-        if (!vehicle.isAvailable()) {
-            throw new VehicleNotAvailableException("The vehicle with the ID number " + vehicleID + " is currently not available for rental");
-        }
+
+            checkAvailable(vehicle);
+            checkDrivingRange(vehicle);
+
+
         this.rentalID = rentalID; // lo gestico fuori dalla classe per poter assegnare lo stesso id all noleggio terminato;
         this.userID = userID;
         this.vehicleID = vehicleID;
@@ -38,6 +35,25 @@ public class RentalInProgress {
         this.rentalStartTime = LocalDateTime.now();
         vehicle.setAvailable(false);
         Database.getDatabase().addRentalRentalInProgress(this);
+    }
+
+
+    private void checkCreditUser(User user,Vehicle vehicle) {
+        if (v)
+
+    }
+    private void checkAvailable(Vehicle vehicle) {
+        if (!vehicle.isAvailable()) {
+            throw new VehicleNotAvailableException("The vehicle with the ID number " + vehicleID + " is currently not available for rental");
+        }
+    }
+
+    private void checkDrivingRange(Vehicle vehicle) {
+        if (vehicle instanceof MotorVehicle) {
+            if (((MotorVehicle) vehicle).isInsufficientDrivingRange()) {
+                throw new VehicleInsufficientDrivingRangeException("The vehicle with the ID number " + vehicleID + " does not have enough driving range for rental");
+            }
+        }
     }
 
     public UUID getRentalID() {
