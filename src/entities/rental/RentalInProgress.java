@@ -20,8 +20,9 @@ public class RentalInProgress {
     protected Position rentalStartPosition;
 
 
-    public RentalInProgress(UUID userID, UUID vehicleID,UUID rentalID) throws VehicleNotAvailableException, VehicleInsufficientDrivingRangeException {
-        Vehicle vehicle = Database.getUuidVehiclehashMap().get(vehicleID);
+    public RentalInProgress(UUID userID, UUID vehicleID, UUID rentalID) {
+        Vehicle vehicle = Database.getDatabase().getVehicleByID(vehicleID);
+        if (u)
         if (vehicle instanceof MotorVehicle) {
             if (((MotorVehicle) vehicle).isInsufficientDrivingRange()) {
                 throw new VehicleInsufficientDrivingRangeException("The vehicle with the ID number " + vehicleID + " does not have enough driving range for rental");
@@ -36,10 +37,31 @@ public class RentalInProgress {
         this.rentalStartPosition = vehicle.getGeographicPosition();
         this.rentalStartTime = LocalDateTime.now();
         vehicle.setAvailable(false);
-        Database.getUuidRentalInProgresslHashMap().put(this.rentalID,this);
+        Database.getDatabase().addRentalRentalInProgress(this);
     }
 
-    public RentalInProgress(RentalInProgress rentalInProgress) throws VehicleNotAvailableException, VehicleInsufficientDrivingRangeException {
-        this(rentalInProgress.userID,rentalInProgress.vehicleID,rentalInProgress.rentalID);
+    public UUID getRentalID() {
+        return rentalID;
+    }
+
+    public UUID getUserID() {
+        return userID;
+    }
+
+    public UUID getVehicleID() {
+        return vehicleID;
+    }
+
+
+    public LocalDateTime getRentalStartTime() {
+        return rentalStartTime;
+    }
+
+    public Position getRentalStartPosition() {
+        return rentalStartPosition;
+    }
+
+    public RentalInProgress(RentalInProgress rentalInProgress) {
+        this(rentalInProgress.userID, rentalInProgress.vehicleID, rentalInProgress.rentalID);
     }
 }

@@ -1,6 +1,8 @@
 package entities.rental.terminated_rental;
 
 import Database.Database;
+import MyException.VehicleInsufficientDrivingRangeException;
+import MyException.VehicleNotAvailableException;
 import admin.AdminSingleton;
 import entities.position.Position;
 import entities.rental.RentalInProgress;
@@ -15,21 +17,41 @@ public class TerminatedRental extends RentalInProgress {
     private LocalDateTime rentalEndTime;
     private Position rentalEndPosition;
     private BigDecimal totPrice;
+    private final Duration MIN_DURATION_IN_MINUTES = Duration.ofMinutes(5);
 
     //crea un oggetto TerminateRental a partire da ID di RentalInProgress
-    //rimuove dal database il noleggio che era in corso appena terminato,
+    //rimuove dal database il noleggio che era in corso,
     //aggiunge al database il noleggio terminato
-    public TerminatedRental(LocalDateTime rentalEndTime, UUID rentalID) throws Exception {
-        super(Database.removeRentalInProgressByRentalID(rentalID));
-        Vehicle vehicle = Database.getUuidVehiclehashMap().get(this.vehicleID);
+    public TerminatedRental(LocalDateTime rentalEndTime, UUID rentalID) {
+        //creo l'oggetto termina noleggio a partire dal noleggio in corso;
+        super(Database.getDatabase().getRentalInProgressByID(rentalID));
+        //recupero il veicolo noleggiato
+        Vehicle vehicle = Database.getDatabase().getVehicleByID(this.vehicleID);
         this.rentalEndTime = rentalEndTime;
-        AdminSingleton.updateStatusVehicle(vehicleID); //aggiorno lo stato dle veicolo posizione + autonomia se presnete
+
+        //verifico se la durata è maggiore o uguale della durata minima
+        checkMinDuration();
+
+        AdminSingleton.getInstance().updateStatusVehicle(vehicleID); //aggiorno lo stato dle veicolo posizione + autonomia se presnete
         this.rentalEndPosition = vehicle.getGeographicPosition();
+        this.totPrice.setScale(2);
         calculateTotPrice(vehicle.getPricePerMinute());
         vehicle.setAvailable(true);
-        Database.getUuidTerminatedRentalHashMap().put(this.vehicleID, this);
+        Database.getDatabase().addTerminatedRental(this);
+        AdminSingleton.getInstance().transactionManager(this.userID,this.rentalID);
     }
 
+    public LocalDateTime getRentalEndTime() {
+        return rentalEndTime;
+    }
+
+    public Position getRentalEndPosition() {
+        return rentalEndPosition;
+    }
+
+    public BigDecimal getTotPrice() {
+        return totPrice;
+    }
 
     //calcola il tempo del noleggio
     private Duration getRentalDuration() {
@@ -41,5 +63,9 @@ public class TerminatedRental extends RentalInProgress {
         this.totPrice = pricePerMinute.multiply(BigDecimal.valueOf(getRentalDuration().toMinutes()));
     }
 
-
+    private void checkMinDuration(){
+        if (getRentalDuration().toMinutes() >= MIN_DURATION_IN_MINUTES.toMinutes()) {
+            throw new MyException.UserCrediInsufficient("the credit is insufficient");
+        }
+    }
 }

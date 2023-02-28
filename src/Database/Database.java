@@ -13,41 +13,88 @@ import java.util.UUID;
 
 public class Database {
 
-    private static HashMap<UUID, Vehicle> uuidVehiclehashMap;
-    private static HashMap<UUID, User> uuidUserHashMap;
-    private static HashMap<UUID, RentalInProgress> uuidRentalInProgresslHashMap;
-    private static HashMap<UUID, TerminatedRental> uuidTerminatedRentalHashMap;
+    private static Database database;
 
-    private static HashMap<UUID, HashSet<DrivingLicence>> uuidUserHashSetUserDrivingLicensesHashMap;
+    public static Database getDatabase() {
+        if (database != null) {
+            return database;
+        }
+        return new Database();
+    }
 
-    public static HashMap<UUID, Vehicle> getUuidVehiclehashMap() {
+    private HashMap<UUID, Vehicle> uuidVehiclehashMap;
+    private HashMap<UUID, User> uuidUserHashMap;
+    private HashMap<UUID, RentalInProgress> uuidRentalInProgresslHashMap;
+    private HashMap<UUID, TerminatedRental> uuidTerminatedRentalHashMap;
+
+    private HashMap<UUID, HashSet<DrivingLicence>> uuidUserHashSetUserDrivingLicensesHashMap;
+
+    public HashMap<UUID, Vehicle> getUuidVehiclehashMap() {
         return uuidVehiclehashMap;
     }
 
-    public static HashMap<UUID, User> getUuidUserHashMap() {
+    public HashMap<UUID, User> getUuidUserHashMap() {
         return uuidUserHashMap;
     }
 
-    public static HashMap<UUID, RentalInProgress> getUuidRentalInProgresslHashMap() {
+    public HashMap<UUID, RentalInProgress> getUuidRentalInProgresslHashMap() {
         return uuidRentalInProgresslHashMap;
     }
 
-    public static HashMap<UUID, TerminatedRental> getUuidTerminatedRentalHashMap() {
+    public HashMap<UUID, TerminatedRental> getUuidTerminatedRentalHashMap() {
         return uuidTerminatedRentalHashMap;
     }
 
 
-    public static void addUser() {
+    public void addNewUser(User user) {
+        if (uuidUserHashMap.containsKey(user.getUserID())) {
+            throw new IllegalArgumentException("The User " + user.getUserID() + " is already present");
+        }
+        uuidUserHashMap.put(user.getUserID(), user);
 
     }
-    public static RentalInProgress removeRentalInProgressByRentalID(UUID rentalID) throws Exception {
+
+    public void removeUser(UUID userID) {
+        if (!uuidUserHashMap.containsKey(userID)) {
+            throw new IllegalArgumentException("The User " + userID + " is not present");
+        }
+        uuidUserHashMap.remove(userID);
+        uuidUserHashSetUserDrivingLicensesHashMap.remove(userID); //elimina le patenti associate all'utente se esistono
+    }
+
+    public void addTerminatedRental(TerminatedRental terminatedRental) {
+        if (uuidTerminatedRentalHashMap.containsKey(terminatedRental.getRentalID())) {
+            throw new IllegalArgumentException("The Rental " + terminatedRental.getRentalID() + " is already present");
+        }
+        uuidTerminatedRentalHashMap.put(terminatedRental.getRentalID(), terminatedRental);
+    }
+
+    public void removeTerminateRental(UUID rentalID) {
+        if (!uuidTerminatedRentalHashMap.containsKey(rentalID)) {
+            throw new NoSuchElementException("Rental not found, impossible to remove");
+        }
+        uuidTerminatedRentalHashMap.remove(rentalID);
+    }
+
+
+    public void addRentalRentalInProgress(RentalInProgress rentalInProgress) {
+        if (uuidRentalInProgresslHashMap.containsKey(rentalInProgress.getRentalID())) {
+            throw new IllegalArgumentException("The Rental " + rentalInProgress.getRentalID() + " is already present");
+        }
+        uuidRentalInProgresslHashMap.put(rentalInProgress.getRentalID(), rentalInProgress);
+
+    }
+
+
+    public RentalInProgress removeRentalInProgress(UUID rentalID) {
         if (!uuidRentalInProgresslHashMap.containsKey(rentalID)) {
             throw new NoSuchElementException("Rental not found, impossible to terminate");
         }
+
         return uuidRentalInProgresslHashMap.remove(rentalID);
     }
 
-    public static void addUserDrivingLicenses(UUID userID,DrivingLicence drivingLicence) {
+    public void addUserDrivingLicenses(UUID userID, DrivingLicence drivingLicence) {
         HashSet<DrivingLicence> drivingLicences;
         if (uuidUserHashSetUserDrivingLicensesHashMap.containsKey(userID)) {
             drivingLicences = uuidUserHashSetUserDrivingLicensesHashMap.get(userID);
@@ -55,43 +102,37 @@ public class Database {
                 throw new IllegalArgumentException("The license " + drivingLicence + " is already included among the user's licenses");
             }
         } else {
-            drivingLicences = new HashSet<DrivingLicence>();
+            drivingLicences = new HashSet<>();
         }
         drivingLicences.add(drivingLicence);
     }
 
 
-
-    /*
-
-    public static Vehicle getVehicleByID(UUID vehicleID) {
-       if (!uuidVehiclehashMap.containsKey(vehicleID)) {
-           throw new NoSuchElementException("VehicleID not found within the map");
-       }
-       return uuidVehiclehashMap.get(vehicleID);
-    }
-*/
-
-    public static User removeUserByID(UUID userID) throws NoSuchElementException {
+    public User getUserByID(UUID userID) {
         if (!uuidUserHashMap.containsKey(userID)) {
-            throw new NoSuchElementException("UserID not found within the map");
+            throw new NoSuchElementException("userID not found within the map");
         }
-        return uuidUserHashMap.remove(userID);
-    }
-/*
-    public static RentalInProgress getRentalByID(UUID rentalID) {
-        if (!uuidRentalInProgresslHashMap.containsKey(rentalID)) {
-            throw new NoSuchElementException("RentalID not found within the map");
-        }
-        return uuidRentalInProgresslHashMap.get(rentalID);
+        return uuidUserHashMap.get(userID);
     }
 
-    public static TerminatedRental getTerminateRentalByID(UUID rentalID) {
+    public Vehicle getVehicleByID(UUID vehicleID) {
+        if (!uuidVehiclehashMap.containsKey(vehicleID)) {
+            throw new NoSuchElementException("VehicleID not found within the map");
+        }
+        return uuidVehiclehashMap.get(vehicleID);
+    }
+    public TerminatedRental getTerminateRentalByID(UUID rentalID) {
         if (!uuidTerminatedRentalHashMap.containsKey(rentalID)) {
             throw new NoSuchElementException("RentalID not found within the map");
         }
         return uuidTerminatedRentalHashMap.get(rentalID);
     }
 
-     */
+    public RentalInProgress getRentalInProgressByID(UUID rentalID) {
+        if (!uuidRentalInProgresslHashMap.containsKey(rentalID)) {
+            throw new NoSuchElementException("RentalID not found within the map");
+        }
+        return uuidRentalInProgresslHashMap.get(rentalID);
+    }
+
 }

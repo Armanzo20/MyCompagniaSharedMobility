@@ -51,23 +51,23 @@ public class UserBuilder {
 
 
     public boolean setName() {
-        if (AdminSingleton.setStringValueByScanner(this.name, "name")) return true;
+        if (AdminSingleton.getInstance().setStringValueByScanner(this.name, "name")) return true;
         return false;
     }
 
 
     public boolean setUsername() {
-        if (AdminSingleton.setStringValueByScanner(this.username, "username")) return true;
+        if (AdminSingleton.getInstance().setStringValueByScanner(this.username, "username")) return true;
         return false;
     }
 
     public boolean setFiscalCode() {
-        if (AdminSingleton.setStringValueByScanner(this.fiscalCode, "fiscal code")) return true;
+        if (AdminSingleton.getInstance().setStringValueByScanner(this.fiscalCode, "fiscal code")) return true;
         return false;
     }
 
     public boolean setDateOfBirth() {
-        if (AdminSingleton.setLocalDateValueByScanner(this.dateOfBirth,"date of birth (YYYY-MM-DD")) return true;
+        if (AdminSingleton.getInstance().setLocalDateValueByScanner(this.dateOfBirth,"date of birth (YYYY-MM-DD")) return true;
         return false;
     }
 

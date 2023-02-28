@@ -2,11 +2,13 @@ package admin;
 
 import Database.Database;
 import entities.position.Position;
+import entities.rental.terminated_rental.TerminatedRental;
 import entities.user.User;
 import entities.user.UserBuilder;
 import entities.vehicle.base_motor_vehicles.MotorVehicle;
 import entities.vehicle.base_vehicles.Vehicle;
 
+import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Scanner;
@@ -36,14 +38,14 @@ public class AdminSingleton {
     - rimuovere un veicolo
     - rifornire un veicolo
     - aggiornare stato veicolo
-    - controllare il credito e gestire la transazione
+
     - avere una lista dei veicoli in uso con relative posizioni e parametri
     - avere una lista di tutti i veicoli disponibili
     - poter modificare tutte le costanti come il prezzo di un noleggio e l'autonomia minima
     */
 
 
-    public static boolean setBooleanByScanner(boolean booleanToModify, String attributeName) {
+    public boolean setBooleanByScanner(boolean booleanToModify, String attributeName) {
         Scanner s = new Scanner(System.in);
         String booleanString = "";
         while (true) {
@@ -56,7 +58,7 @@ public class AdminSingleton {
                 }
             } catch (NumberFormatException e) {
                 System.out.println(e);
-                System.out.println("Please insert a valid date or type /back to quit.");
+                System.out.println("Please insert a valid value or type /back to quit.");
                 String command = s.next();
                 if (command.equalsIgnoreCase("/back")) {
                     return false;
@@ -65,7 +67,7 @@ public class AdminSingleton {
         }
     }
 
-    public static boolean setLocalDateValueByScanner(LocalDate localDateToModify, String attributeName) {
+    public boolean setLocalDateValueByScanner(LocalDate localDateToModify, String attributeName) {
         Scanner s = new Scanner(System.in);
         String localDateString = "";
         if (!setStringValueByScanner(localDateString, attributeName)) return false;
@@ -86,7 +88,7 @@ public class AdminSingleton {
     }
 
     //andrebbe impostato anche un numero minimo di tentativi
-    public static boolean setStringValueByScanner(String stringToModify, String attributeName) {
+    public boolean setStringValueByScanner(String stringToModify, String attributeName) {
         Scanner s = new Scanner(System.in);
         System.out.print("Insert " + attributeName + ": ");
         while (true) {
@@ -104,8 +106,8 @@ public class AdminSingleton {
         }
     }
 
-    public static void updateStatusVehicle(UUID vehicleID) {
-        Vehicle vehicle = Database.getUuidVehiclehashMap().get(vehicleID);
+    public void updateStatusVehicle(UUID vehicleID) {
+        Vehicle vehicle = Database.getDatabase().getVehicleByID(vehicleID);;
         Scanner s = new Scanner(System.in);
         if (vehicle instanceof MotorVehicle) {
             updateDistanceDriving(vehicle);
@@ -113,7 +115,7 @@ public class AdminSingleton {
         updateVehiclePosition(vehicle);
     }
 
-    private static void updateVehiclePosition(Vehicle vehicle) {
+    private void updateVehiclePosition(Vehicle vehicle) {
         Scanner s = new Scanner(System.in);
         System.out.print("Enter longitude [" + Position.getLongitudeMin() + ", " + Position.getLongitudeMax() + "]: ");
         try {
@@ -129,7 +131,7 @@ public class AdminSingleton {
         }
     }
 
-    private static void updateDistanceDriving(Vehicle vehicle) {
+    private void updateDistanceDriving(Vehicle vehicle) {
         Scanner s = new Scanner(System.in);
         System.out.print("Enter the new value of the driving distance in Km: ");
         try {
@@ -140,7 +142,7 @@ public class AdminSingleton {
     }
 
     //- registrare un nuovo utente
-    public static void addNewUser() {
+    public void addNewUser() {
         UserBuilder userBuilder = new UserBuilder();
         User user = null;
         try {
@@ -151,18 +153,29 @@ public class AdminSingleton {
         catch (Exception e) {
             System.out.println(e);
         }
-        Database.getUuidUserHashMap().put(user.getUserID(),user);
+        Database.getDatabase().addNewUser(user);
     }
 
 
     //rimuove un utente passato come parametro
-    public static void removeUser(UUID userID) {
+    public void removeUser(UUID userID) {
         try {
-          Database.removeUserByID(userID);
+          Database.getDatabase().removeUser(userID);
         } catch (Exception e) {
             System.out.println(e);
         }
           System.out.println("User " + userID + " successfully removed");
+    }
+
+    //- controllare il credito e gestire la transazione
+    public void transactionManager(UUID userID,UUID rentalID){
+        User user = Database.getDatabase().getUserByID(userID);
+        TerminatedRental terminatedRental = Database.getDatabase().getTerminateRentalByID(rentalID);
+        user.setUserCredit(decrementCreditUser(user.getUserCredit(),terminatedRental.getTotPrice()));
+    }
+
+    private BigDecimal decrementCreditUser(BigDecimal creditUser,BigDecimal totPriceRental) {
+        return creditUser.subtract(totPriceRental);
     }
 
 

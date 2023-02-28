@@ -1,6 +1,6 @@
 package MyException;
 
-public class VehicleNotAvailableException extends Exception{
+public class VehicleNotAvailableException extends RuntimeException{
 
     public VehicleNotAvailableException(String message) {
         super(message);
